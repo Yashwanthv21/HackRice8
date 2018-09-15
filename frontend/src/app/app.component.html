@@ -1,0 +1,22 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div class="cView">
+    <div class="cHeader">
+      <div class="cTitle"> {{ title }}</div>
+      <div class="cMeta" *ngIf="!isLoading">Equipment: {{ dataPointsMeta?.equipment }}</div>
+      <div class="cMeta" *ngIf="!isLoading">Sensor: {{ dataPointsMeta?.sensor }}</div>
+      <div class="cStats" *ngIf="!isLoading">Total data points: {{ dataPoints?.length }}</div>
+    </div>
+    <div class="cLoading" *ngIf="isLoading">Loading data points...</div>
+    <table *ngIf="!isLoading" class="cTable">
+      <thead>
+        <th>Timestamp</th>
+        <th>Value ({{dataPointsMeta?.dataPointUnit}})</th>
+      </thead>
+      <tr *ngFor="let item of dataPoints">
+        <td>{{item.timestamp}}</td>
+        <td>{{item.value}}</td>
+      </tr>
+  </table>
+</div>
+
+
