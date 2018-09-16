@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Plots!</title>
+    <style type="text/css">
+    .mainBody {
+        color: yellow;
+        position: absolute;
+        top: 40px;
+        bottom: 20px;
+        width:100%;
+    }
+</style>
+</head>
+<body>
+    <h1>TimeSeries</h1>
+    <h2 id="device"></h2>
+
+    <div class="row">
+      <div class="col-sm-9" id="motor-temp" style="height: 300px; margin: 0 auto">
+      </div>
+      <div class="col-sm-3" id="motorTemp-guage" style="height: 300px; margin: 0 auto">
+      </div>
+</div>
+<div class="row">
+    <div class="col" id="vsd" style="height: 300px; margin: 0 auto">
+
+    </div>
+</div>
+<div class="row">
+    <div class="col" id="temp-pressure" style="height: 300px; margin: 0 auto">
+
+    </div>
+</div>
+
+<!-- <div id="container" class="mainBody"></div> -->
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/boost.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<!-- <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script> -->
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+
+
+    <script type="text/javascript">
+        var motorTemp = 0;
+        var waterVal = 0;
+
+        function charts(){
+
+
+
+            Highcharts.chart('motor-temp', {
+                chart: {
+                     events: {
+          load: function () {
+
+        // set up the updating of the chart each second
+        var series = this.series[0];
+        var i = 0;
+        setInterval(function () {
+          var x = data['ts'].slice(100,); // current time
+          motorTemp = MOTOR_TEMP.points.splice(0,1)[0];
+          // console.log([x[i], y[i]])
+          series.addPoint([x[i], motorTemp], true, true);
+          i++;
+      }, 2000);
+    }
+},
+    zoomType: 'xy',
+        // alignTicks:false
+    },
+    boost: {
+        useGPUTranslations: true
+    },
+
+    title: {
+        text: 'Motor Temperature'
+    },
+xAxis: {
+    type: 'datetime'
+},
+    yAxis: [{ // Primary yAxis
+        labels: {
+            format: '{value} °F',
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        },
+        title: {
+            text: 'Temperature',
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        }
+
+    }],
+    tooltip: {
+        shared: true
+    },
+    legend: {
+        layout: 'vertical',
+        align: 'left',
+        x: 80,
+        verticalAlign: 'top',
+        y: 55,
+        floating: true,
+        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+    },
+series: [{
+    name: 'Temperature',
+    data: MOTOR_TEMP.points.splice(0,100),
+    tooltip: {
+        valueSuffix: ' °F'
+    }
+},],
+
+responsive: {
+    rules: [{
+      condition: {
+        maxWidth: 500
+    },
+    chartOptions: {
+        legend: {
+          layout: 'horizontal',
+          align: 'center',
+          verticalAlign: 'bottom'
+      }
+  }
+}]
+}
+});
+
+            Highcharts.chart('motorTemp-guage', {
+
+              chart: {
+                type: 'gauge',
+                plotBackgroundColor: null,
+                plotBackgroundImage: null,
+                plotBorderWidth: 0,
+                plotShadow: false
+            },
+
+            title: {
+                text: 'motorTemp'
+            },
+
+            pane: {
+                startAngle: -150,
+                endAngle: 150,
+                background: [{
+                  backgroundColor: {
+                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                    stops: [
+                    [0, '#FFF'],
+                    [1, '#333']
+                    ]
+                },
+                borderWidth: 0,
+                outerRadius: '109%'
+            }, {
+              backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                [0, '#333'],
+                [1, '#FFF']
+                ]
+            },
+            borderWidth: 1,
+            outerRadius: '107%'
+        }, {
+      // default background
+  }, {
+      backgroundColor: '#DDD',
+      borderWidth: 0,
+      outerRadius: '105%',
+      innerRadius: '103%'
+  }]
+},
+
+  // the value axis
+  yAxis: {
+    min: 450,
+    max: 550,
+
+    minorTickInterval: 'auto',
+    minorTickWidth: 1,
+    minorTickLength: 10,
+    minorTickPosition: 'inside',
+    minorTickColor: '#666',
+
+    tickPixelInterval: 30,
+    tickWidth: 2,
+    tickPosition: 'inside',
+    tickLength: 10,
+    tickColor: '#666',
+    labels: {
+      step: 2,
+      rotation: 'auto'
+  },
+  title: {
+      text: '%'
+  },
+  plotBands: [{
+      from: 450,
+      to: 500,
+      color: '#55BF3B' // green
+  }, {
+      from: 500,
+      to: 520,
+      color: '#DDDF0D' // yellow
+  }, {
+      from: 520,
+      to: 550,
+      color: '#DF5353' // red
+  }]
+},
+
+series: [{
+    name: 'Temp',
+    data: [80],
+    tooltip: {
+      valueSuffix: ' °F'
+  }
+}]
+
+},
+// Add some life
+function (chart) {
+  if (!chart.renderer.forExport) {
+    setInterval(function () {
+      var point = chart.series[0].points[0];
+    point.update(motorTemp);
+
+}, 2000);
+}
+});
+
+
+Highcharts.chart('vsd', {
+
+  chart: {
+    type: 'gauge',
+    plotBorderWidth: 1,
+    plotBackgroundColor: {
+      linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+      stops: [
+        [0, '#FFF4C6'],
+        [0.3, '#FFFFFF'],
+        [1, '#FFF4C6']
+      ]
+    },
+    plotBackgroundImage: null,
+    height: 200
+  },
+
+  title: {
+    text: 'Variable Speed Driver (VSD)'
+  },
+
+  pane: [{
+    startAngle: -45,
+    endAngle: 45,
+    background: null,
+    center: ['25%', '145%'],
+    size: 300
+  }, {
+    startAngle: -45,
+    endAngle: 45,
+    background: null,
+    center: ['75%', '145%'],
+    size: 300
+  }],
+
+  tooltip: {
+    enabled: false
+  },
+
+  yAxis: [{
+    min: 0,
+    max: 450,
+    minorTickPosition: 'outside',
+    tickPosition: 'outside',
+    labels: {
+      rotation: 'auto',
+      distance: 20
+    },
+    plotBands: [{
+      from: 380,
+      to: 450,
+      color: '#C02316',
+      innerRadius: '100%',
+      outerRadius: '105%'
+    }],
+    pane: 0,
+    title: {
+      text: 'Frequency Out<br/><span style="font-size:8px">Hz</span>',
+      y: -40
+    }
+  }, {
+    min: 0,
+    max: 200,
+    minorTickPosition: 'outside',
+    tickPosition: 'outside',
+    labels: {
+      rotation: 'auto',
+      distance: 20
+    },
+    plotBands: [{
+      from: 170,
+      to: 200,
+      color: '#C02316',
+      innerRadius: '100%',
+      outerRadius: '105%'
+    }],
+    pane: 1,
+    title: {
+      text: 'Current<br/><span style="font-size:8px">Amps</span>',
+      y: -40
+    }
+  }],
+
+  plotOptions: {
+    gauge: {
+      dataLabels: {
+        enabled: false
+      },
+      dial: {
+        radius: '100%'
+      }
+    }
+  },
+
+
+  series: [{
+    name: 'Channel A',
+    data: [-20],
+    yAxis: 0
+  }, {
+    name: 'Channel B',
+    data: [-20],
+    yAxis: 1
+  }]
+
+},
+
+  // Let the music play
+  function (chart) {
+    setInterval(function () {
+      if (chart.series) { // the chart may be destroyed
+        var left = chart.series[0].points[0],
+          right = chart.series[1].points[0],
+          leftVal,
+          rightVal;
+        leftVal = Math.random() * 150;
+        rightVal = Math.random() * 100;
+        left.update(leftVal, false);
+        right.update(rightVal, false);
+        chart.redraw();
+      }
+    }, 500);
+
+  });
+
+
+Highcharts.chart('temp-pressure', {
+  chart: {
+      events: {
+          load: function () {
+
+        // set up the updating of the chart each second
+        var series = this.series[0];
+        var series1 = this.series[1];
+        var series2 = this.series[2];
+        var i = 0;
+        setInterval(function () {
+          var x = data['ts'].slice(100,); // current time
+          var c = INTAKE_TEMPERATURE.points.splice(0,1)[0];
+          var w = DISCHARGE_PRESSURE.points.splice(0,1)[0];
+          var j = INTAKE_PRESSURE.points.splice(0,1)[0];
+          // console.log([x[i], y[i]])
+          series.addPoint([x[i], c], true, true);
+          series1.addPoint([x[i], w], true, true);
+          series2.addPoint([x[i], j], true, true);
+          i++;
+      }, 2000);
+    }
+},
+    zoomType: 'xy'
+},
+title: {
+    text: 'Temperature and Pressure'
+},
+xAxis: [{
+    crosshair: true,
+    type: 'datetime'
+}],
+  yAxis: [{ // Primary yAxis
+    labels: {
+      format: '{value}°F',
+      style: {
+        color: Highcharts.getOptions().colors[0]
+    }
+},
+title: {
+  text: 'Temperature',
+  style: {
+    color: Highcharts.getOptions().colors[0]
+}
+},
+opposite: true
+
+  }, { // Secondary yAxis
+    gridLineWidth: 0,
+    title: {
+      text: 'Pressure',
+      style: {
+        color: Highcharts.getOptions().colors[1]
+    }
+},
+labels: {
+  format: '{value} psia',
+  style: {
+    color: Highcharts.getOptions().colors[1]
+}
+}
+
+}],
+tooltip: {
+    shared: true
+},
+legend: {
+    layout: 'vertical',
+    align: 'left',
+    x: 80,
+    verticalAlign: 'top',
+    y: 55,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+},
+series: [{
+    name: 'Temperature',
+    type: 'spline',
+    yAxis: 1,
+    data: INTAKE_TEMPERATURE.points.splice(0,100),
+    tooltip: {
+      valueSuffix: ' °F'
+  }
+
+}, {
+    name: 'Discharge Pressure',
+    type: 'area',
+    data: DISCHARGE_PRESSURE.points.splice(0,100),
+    tooltip: {
+      valueSuffix: ' psia'
+  }
+},{
+    name: 'Intake Pressure',
+    type: 'area',
+    data: INTAKE_PRESSURE.points.splice(0,100),
+    tooltip: {
+      valueSuffix: ' psia'
+  }
+}],
+
+responsive: {
+    rules: [{
+      condition: {
+        maxWidth: 500
+    },
+    chartOptions: {
+        legend: {
+          layout: 'horizontal',
+          align: 'center',
+          verticalAlign: 'bottom'
+      }
+  }
+}]
+}
+});
+
+}
+
+var data = {{ data | safe}};
+  // data = JSON.parse(data);
+  console.log(data)
+  // 
+  // to get keys Object.keys(data)
+  sensors = Object.keys(data) 
+  // $("#device").html(JSON.parse(data[sensors[1]]).equipment)
+
+  // JSON.parse(data[sensors[0]]).datapoints
+  if ('DISCHARGE_PRESSURE' in data){
+    var DISCHARGE_PRESSURE = data['DISCHARGE_PRESSURE']
+}
+if ('INTAKE_PRESSURE' in data) {
+    var INTAKE_PRESSURE = data['INTAKE_PRESSURE']
+}
+if ('INTAKE_TEMPERATURE' in data){
+    var INTAKE_TEMPERATURE = data['INTAKE_TEMPERATURE']
+}
+if ('MOTOR_TEMP' in data){
+    var MOTOR_TEMP = data['MOTOR_TEMP']
+}
+if ('VSDFREQOUT' in data) {
+    var VSDFREQOUT = data['VSDFREQOUT']
+}
+if ('VSDMOTAMPS' in data) {
+    var VSDMOTAMPS = data['VSDMOTAMPS']
+}
+
+$( document ).ready(function() {
+    // datainit();
+    charts();
+});
+
+
+Highcharts.theme = {
+    colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572',
+    '#FF9655', '#FFF263', '#6AF9C4'],
+    chart: {
+        backgroundColor: {
+            linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+            stops: [
+            [0, 'rgb(255, 255, 255)'],
+            [1, 'rgb(240, 240, 255)']
+            ]
+        },
+        borderWidth: 2,
+        plotBackgroundColor: 'rgba(255, 255, 255, .9)',
+        plotShadow: true,
+        plotBorderWidth: 1
+    },
+    title: {
+        style: {
+            color: '#000',
+            font: 'bold 16px "Trebuchet MS", Verdana, sans-serif'
+        }
+    },
+    subtitle: {
+        style: {
+            color: '#666666',
+            font: 'bold 12px "Trebuchet MS", Verdana, sans-serif'
+        }
+    },
+    xAxis: {
+        gridLineWidth: 1,
+        lineColor: '#000',
+        tickColor: '#000',
+        labels: {
+            style: {
+                color: '#000',
+                font: '11px Trebuchet MS, Verdana, sans-serif'
+            }
+        },
+        title: {
+            style: {
+                color: '#333',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+
+            }
+        }
+    },
+    yAxis: {
+        minorTickInterval: 'auto',
+        lineColor: '#000',
+        lineWidth: 1,
+        tickWidth: 1,
+        tickColor: '#000',
+        labels: {
+            style: {
+                color: '#000',
+                font: '11px Trebuchet MS, Verdana, sans-serif'
+            }
+        },
+        title: {
+            style: {
+                color: '#333',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+            }
+        }
+    },
+    legend: {
+        itemStyle: {
+            font: '9pt Trebuchet MS, Verdana, sans-serif',
+            color: 'black'
+
+        },
+        itemHoverStyle: {
+            color: '#039'
+        },
+        itemHiddenStyle: {
+            color: 'gray'
+        }
+    },
+    labels: {
+        style: {
+            color: '#99b'
+        }
+    },
+
+    navigation: {
+        buttonOptions: {
+            theme: {
+                stroke: '#CCCCCC'
+            }
+        }
+    }
+};
+
+Highcharts.setOptions(Highcharts.theme);
+
+</script>
+</body>
+</html>

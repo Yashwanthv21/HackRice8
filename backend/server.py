@@ -85,7 +85,9 @@ def ts():
                         out[s] = t
                 # print(out)
         # print(out["ts"])
-        return render_template('ts.html',data=json.dumps(out))
+        if "IC" in device_id:
+            return render_template('ts.html',data=json.dumps(out))
+        return render_template('ts2.html',data=json.dumps(out))
             # return d.serialize
     abort(404)
 

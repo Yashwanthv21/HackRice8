@@ -65,8 +65,102 @@
 
 
     <script type="text/javascript">
+        var chokeVal = 0;
+        var waterVal = 0;
 
         function charts(){
+
+
+
+            Highcharts.chart('choke-waterCut-line', {
+                chart: {
+                     events: {
+          load: function () {
+
+        // set up the updating of the chart each second
+        var series = this.series[0];
+        var series1 = this.series[1];
+        var i = 0;
+        setInterval(function () {
+          var x = data['ts'].slice(100,); // current time
+          chokeVal = choke.points.splice(0,1)[0];
+          waterVal = waterCut.points.splice(0,1)[0];
+          // console.log([x[i], y[i]])
+          series.addPoint([x[i], chokeVal], true, true);
+          series1.addPoint([x[i], waterVal], true, true);
+          i++;
+      }, 2000);
+    }
+},
+    zoomType: 'xy',
+        // alignTicks:false
+    },
+    boost: {
+        useGPUTranslations: true
+    },
+
+    title: {
+        text: 'Choke and WaterCut Percentage'
+    },
+xAxis: {
+    type: 'datetime'
+},
+    yAxis: [{ // Primary yAxis
+        labels: {
+            format: '{value} %',
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        },
+        title: {
+            text: 'Percentage',
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        }
+
+    }],
+    tooltip: {
+        shared: true
+    },
+    legend: {
+        layout: 'vertical',
+        align: 'left',
+        x: 80,
+        verticalAlign: 'top',
+        y: 55,
+        floating: true,
+        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+    },
+series: [{
+    name: 'Choke',
+    data: choke.points.splice(0,100),
+    tooltip: {
+        valueSuffix: ' %'
+    }
+}, {
+    name: 'WaterCut',
+    data: waterCut.points.splice(0,100),
+    tooltip: {
+        valueSuffix: ' %'
+    }
+}],
+
+responsive: {
+    rules: [{
+      condition: {
+        maxWidth: 500
+    },
+    chartOptions: {
+        legend: {
+          layout: 'horizontal',
+          align: 'center',
+          verticalAlign: 'bottom'
+      }
+  }
+}]
+}
+});
 
             Highcharts.chart('choke-guage', {
 
@@ -166,18 +260,10 @@ series: [{
 function (chart) {
   if (!chart.renderer.forExport) {
     setInterval(function () {
-      var point = chart.series[0].points[0],
-      newVal,
-      inc = Math.round((Math.random() - 0.5) * 20);
+      var point = chart.series[0].points[0];
+    point.update(chokeVal);
 
-      newVal = point.y + inc;
-      if (newVal < 0 || newVal > 100) {
-        newVal = point.y - inc;
-    }
-
-    point.update(newVal);
-
-}, 3000);
+}, 2000);
 }
 });
 
@@ -279,111 +365,13 @@ series: [{
 function (chart) {
   if (!chart.renderer.forExport) {
     setInterval(function () {
-      var point = chart.series[0].points[0],
-      newVal,
-      inc = Math.round((Math.random() - 0.5) * 20);
+      var point = chart.series[0].points[0];
 
-      newVal = point.y + inc;
-      if (newVal < 0 || newVal > 100) {
-        newVal = point.y - inc;
-    }
+    point.update(waterVal);
 
-    point.update(newVal);
-
-}, 3000);
+}, 2000);
 }
 });
-
-            Highcharts.chart('choke-waterCut-line', {
-                chart: {
-                     events: {
-          load: function () {
-
-        // set up the updating of the chart each second
-        var series = this.series[0];
-        var series1 = this.series[1];
-        var i = 0;
-        setInterval(function () {
-          var x = data['ts'].slice(100,); // current time
-          var c = choke.points;
-          var w = waterCut.points;
-          // console.log([x[i], y[i]])
-          series.addPoint([x[i], c[i]], true, true);
-          series1.addPoint([x[i], w[i]], true, true);
-          i++;
-      }, 1000);
-    }
-},
-    zoomType: 'xy',
-        // alignTicks:false
-    },
-    boost: {
-        useGPUTranslations: true
-    },
-
-    title: {
-        text: 'Choke and WaterCut Percentage'
-    },
-xAxis: {
-    type: 'datetime'
-},
-    yAxis: [{ // Primary yAxis
-        labels: {
-            format: '{value} %',
-            style: {
-                color: Highcharts.getOptions().colors[0]
-            }
-        },
-        title: {
-            text: 'Percentage',
-            style: {
-                color: Highcharts.getOptions().colors[0]
-            }
-        }
-
-    }],
-    tooltip: {
-        shared: true
-    },
-    legend: {
-        layout: 'vertical',
-        align: 'left',
-        x: 80,
-        verticalAlign: 'top',
-        y: 55,
-        floating: true,
-        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-    },
-series: [{
-    name: 'Choke',
-    data: choke.points.splice(0,100),
-    tooltip: {
-        valueSuffix: ' %'
-    }
-}, {
-    name: 'WaterCut',
-    data: waterCut.points.splice(0,100),
-    tooltip: {
-        valueSuffix: ' %'
-    }
-}],
-
-responsive: {
-    rules: [{
-      condition: {
-        maxWidth: 500
-    },
-    chartOptions: {
-        legend: {
-          layout: 'horizontal',
-          align: 'center',
-          verticalAlign: 'bottom'
-      }
-  }
-}]
-}
-});
-
             Highcharts.setOptions({
               global: {
                 useUTC: false
@@ -480,11 +468,11 @@ Highcharts.chart('oilRate', {
         var i = 0;
         setInterval(function () {
           var x = data['ts'].slice(100,) // current time
-          y = or;
+          y = or.splice(0,1);
           // console.log([x[i], y[i]])
-          series.addPoint([x[i], y[i]], true, true);
+          series.addPoint([x[i], y[0][0], y[0][1]], true, true);
           i++;
-      }, 1000);
+      }, 2000);
     }
 },
 type: 'arearange',
@@ -529,16 +517,32 @@ series: [{
 
 Highcharts.chart('temp-pressure', {
   chart: {
+      events: {
+          load: function () {
+
+        // set up the updating of the chart each second
+        var series = this.series[0];
+        var series1 = this.series[1];
+        var i = 0;
+        setInterval(function () {
+          var x = data['ts'].slice(100,); // current time
+          var c = temp.splice(0,1);
+          var w = p.splice(0,1);
+          // console.log([x[i], y[i]])
+          series.addPoint([x[i], c[0]], true, true);
+          series1.addPoint([x[i], w[0]], true, true);
+          i++;
+      }, 2000);
+    }
+},
     zoomType: 'xy'
 },
 title: {
     text: 'Temperature and Pressure'
 },
 xAxis: [{
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     crosshair: true,
-    // type: 'datetime'
+    type: 'datetime'
 }],
   yAxis: [{ // Primary yAxis
     labels: {
@@ -587,7 +591,7 @@ series: [{
     name: 'Temperature',
     type: 'spline',
     yAxis: 1,
-    data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
+    data: temp.splice(0,100),
     tooltip: {
       valueSuffix: ' °F'
   }
@@ -595,7 +599,7 @@ series: [{
 }, {
     name: 'Pressure',
     type: 'spline',
-    data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6],
+    data: p.splice(0,100),
     tooltip: {
       valueSuffix: ' psia'
   }
