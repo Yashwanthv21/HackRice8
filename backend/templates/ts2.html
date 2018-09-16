@@ -198,7 +198,7 @@ responsive: {
 
   // the value axis
   yAxis: {
-    min: 450,
+    min: 300,
     max: 550,
 
     minorTickInterval: 'auto',
@@ -217,7 +217,7 @@ responsive: {
       rotation: 'auto'
   },
   title: {
-      text: '%'
+      text: '°F'
   },
   plotBands: [{
       from: 450,
@@ -296,7 +296,7 @@ Highcharts.chart('vsd', {
 
   yAxis: [{
     min: 0,
-    max: 450,
+    max: 120,
     minorTickPosition: 'outside',
     tickPosition: 'outside',
     labels: {
@@ -304,20 +304,20 @@ Highcharts.chart('vsd', {
       distance: 20
     },
     plotBands: [{
-      from: 380,
-      to: 450,
+      from: 80,
+      to: 120,
       color: '#C02316',
       innerRadius: '100%',
       outerRadius: '105%'
     }],
     pane: 0,
     title: {
-      text: 'Frequency Out<br/><span style="font-size:8px">Hz</span>',
+      text: 'Frequency Out<br/><span style="font-size:12px">Hz</span>',
       y: -40
     }
   }, {
-    min: 0,
-    max: 200,
+    min: 50,
+    max: 250,
     minorTickPosition: 'outside',
     tickPosition: 'outside',
     labels: {
@@ -325,15 +325,15 @@ Highcharts.chart('vsd', {
       distance: 20
     },
     plotBands: [{
-      from: 170,
-      to: 200,
+      from: 220,
+      to: 250,
       color: '#C02316',
       innerRadius: '100%',
       outerRadius: '105%'
     }],
     pane: 1,
     title: {
-      text: 'Current<br/><span style="font-size:8px">Amps</span>',
+      text: 'Current<br/><span style="font-size:12px">Amps</span>',
       y: -40
     }
   }],
@@ -351,12 +351,12 @@ Highcharts.chart('vsd', {
 
 
   series: [{
-    name: 'Channel A',
-    data: [-20],
+    name: 'Freq',
+    data: [0],
     yAxis: 0
   }, {
-    name: 'Channel B',
-    data: [-20],
+    name: 'Curr',
+    data: [0],
     yAxis: 1
   }]
 
@@ -370,13 +370,13 @@ Highcharts.chart('vsd', {
           right = chart.series[1].points[0],
           leftVal,
           rightVal;
-        leftVal = Math.random() * 150;
-        rightVal = Math.random() * 100;
+        leftVal = VSDFREQOUT.points.splice(0,1)[0];
+        rightVal = VSDMOTAMPS.points.splice(0,1)[0];
         left.update(leftVal, false);
         right.update(rightVal, false);
         chart.redraw();
       }
-    }, 500);
+    }, 2000);
 
   });
 
@@ -415,15 +415,15 @@ xAxis: [{
 }],
   yAxis: [{ // Primary yAxis
     labels: {
-      format: '{value}°F',
+      format: '{value} psia',
       style: {
-        color: Highcharts.getOptions().colors[0]
+        color: Highcharts.getOptions().colors[1]
     }
 },
 title: {
-  text: 'Temperature',
+  text: 'Pressure',
   style: {
-    color: Highcharts.getOptions().colors[0]
+    color: Highcharts.getOptions().colors[1]
 }
 },
 opposite: true
@@ -431,15 +431,15 @@ opposite: true
   }, { // Secondary yAxis
     gridLineWidth: 0,
     title: {
-      text: 'Pressure',
+      text: 'Temperature',
       style: {
-        color: Highcharts.getOptions().colors[1]
+        color: Highcharts.getOptions().colors[0]
     }
 },
 labels: {
-  format: '{value} psia',
+  format: '{value} °F',
   style: {
-    color: Highcharts.getOptions().colors[1]
+    color: Highcharts.getOptions().colors[0]
 }
 }
 
@@ -466,7 +466,7 @@ series: [{
   }
 
 }, {
-    name: 'Discharge Pressure',
+    name: 'Pressure',
     type: 'area',
     data: DISCHARGE_PRESSURE.points.splice(0,100),
     tooltip: {
