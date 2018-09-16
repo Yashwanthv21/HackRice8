@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Plots!</title>
+    <style type="text/css">
+    .mainBody {
+        color: yellow;
+        position: absolute;
+        top: 40px;
+        bottom: 20px;
+        width:100%;
+    }
+</style>
+</head>
+<body>
+    <h1>TimeSeries</h1>
+    <h2 id="device"></h2>
+
+    <div class="row">
+      <div class="col-sm-6" id="choke-waterCut-line" style="height: 300px; margin: 0 auto">
+      </div>
+      <div class="col-sm-3" id="choke-guage" style="height: 300px; margin: 0 auto">
+      </div>
+<!--   <div class="col-sm-3" id="waterCut-line" style="height: 300px; margin: 0 auto">3 of 4
+</div> -->
+<div class="col-sm-3" id="waterCut-guage" style="height: 300px; margin: 0 auto">
+</div>
+</div>
+<div class="row">
+    <div class="col" id="oilRate" style="height: 300px; margin: 0 auto">
+
+    </div>
+</div>
+<div class="row">
+    <div class="col" id="temp-pressure" style="height: 300px; margin: 0 auto">
+
+    </div>
+</div>
+
+<!-- <div id="container" class="mainBody"></div> -->
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/boost.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+
+<script type="text/javascript">
+
+    function charts(){
+
+        Highcharts.chart('choke-guage', {
+
+          chart: {
+            type: 'gauge',
+            plotBackgroundColor: null,
+            plotBackgroundImage: null,
+            plotBorderWidth: 0,
+            plotShadow: false
+        },
+
+        title: {
+            text: 'Choke'
+        },
+
+        pane: {
+            startAngle: -150,
+            endAngle: 150,
+            background: [{
+              backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                [0, '#FFF'],
+                [1, '#333']
+                ]
+            },
+            borderWidth: 0,
+            outerRadius: '109%'
+        }, {
+          backgroundColor: {
+            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+            stops: [
+            [0, '#333'],
+            [1, '#FFF']
+            ]
+        },
+        borderWidth: 1,
+        outerRadius: '107%'
+    }, {
+      // default background
+  }, {
+      backgroundColor: '#DDD',
+      borderWidth: 0,
+      outerRadius: '105%',
+      innerRadius: '103%'
+  }]
+},
+
+  // the value axis
+  yAxis: {
+    min: 0,
+    max: 100,
+
+    minorTickInterval: 'auto',
+    minorTickWidth: 1,
+    minorTickLength: 10,
+    minorTickPosition: 'inside',
+    minorTickColor: '#666',
+
+    tickPixelInterval: 30,
+    tickWidth: 2,
+    tickPosition: 'inside',
+    tickLength: 10,
+    tickColor: '#666',
+    labels: {
+      step: 2,
+      rotation: 'auto'
+  },
+  title: {
+      text: '%'
+  },
+  plotBands: [{
+      from: 0,
+      to: 60,
+      color: '#55BF3B' // green
+  }, {
+      from: 60,
+      to: 90,
+      color: '#DDDF0D' // yellow
+  }, {
+      from: 90,
+      to: 100,
+      color: '#DF5353' // red
+  }]
+},
+
+series: [{
+    name: 'FVC',
+    data: [80],
+    tooltip: {
+      valueSuffix: ' %'
+  }
+}]
+
+},
+// Add some life
+function (chart) {
+  if (!chart.renderer.forExport) {
+    setInterval(function () {
+      var point = chart.series[0].points[0],
+      newVal,
+      inc = Math.round((Math.random() - 0.5) * 20);
+
+      newVal = point.y + inc;
+      if (newVal < 0 || newVal > 100) {
+        newVal = point.y - inc;
+    }
+
+    point.update(newVal);
+
+}, 3000);
+}
+});
+
+        Highcharts.chart('waterCut-guage', {
+
+          chart: {
+            type: 'gauge',
+            plotBackgroundColor: null,
+            plotBackgroundImage: null,
+            plotBorderWidth: 0,
+            plotShadow: false
+        },
+
+        title: {
+            text: 'Water Cut'
+        },
+
+        pane: {
+            startAngle: -150,
+            endAngle: 150,
+            background: [{
+              backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                [0, '#FFF'],
+                [1, '#333']
+                ]
+            },
+            borderWidth: 0,
+            outerRadius: '109%'
+        }, {
+          backgroundColor: {
+            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+            stops: [
+            [0, '#333'],
+            [1, '#FFF']
+            ]
+        },
+        borderWidth: 1,
+        outerRadius: '107%'
+    }, {
+      // default background
+  }, {
+      backgroundColor: '#DDD',
+      borderWidth: 0,
+      outerRadius: '105%',
+      innerRadius: '103%'
+  }]
+},
+
+  // the value axis
+  yAxis: {
+    min: 0,
+    max: 100,
+
+    minorTickInterval: 'auto',
+    minorTickWidth: 1,
+    minorTickLength: 10,
+    minorTickPosition: 'inside',
+    minorTickColor: '#666',
+
+    tickPixelInterval: 30,
+    tickWidth: 2,
+    tickPosition: 'inside',
+    tickLength: 10,
+    tickColor: '#666',
+    labels: {
+      step: 2,
+      rotation: 'auto'
+  },
+  title: {
+      text: '%'
+  },
+  plotBands: [{
+      from: 0,
+      to: 30,
+      color: '#55BF3B' // green
+  }, {
+      from: 30,
+      to: 60,
+      color: '#DDDF0D' // yellow
+  }, {
+      from: 60,
+      to: 100,
+      color: '#DF5353' // red
+  }]
+},
+
+series: [{
+    name: 'Water Ratio',
+    data: [80],
+    tooltip: {
+      valueSuffix: ' %'
+  }
+}]
+
+},
+// Add some life
+function (chart) {
+  if (!chart.renderer.forExport) {
+    setInterval(function () {
+      var point = chart.series[0].points[0],
+      newVal,
+      inc = Math.round((Math.random() - 0.5) * 20);
+
+      newVal = point.y + inc;
+      if (newVal < 0 || newVal > 100) {
+        newVal = point.y - inc;
+    }
+
+    point.update(newVal);
+
+}, 3000);
+}
+});
+
+        Highcharts.chart('choke-waterCut-line', {
+            chart: {
+                zoomType: 'xy',
+        // alignTicks:false
+    },
+    boost: {
+        useGPUTranslations: true
+    },
+
+    title: {
+        text: 'Choke and WaterCut Percentage'
+    },
+
+    yAxis: [{ // Primary yAxis
+        labels: {
+            format: '{value} %',
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        },
+        title: {
+            text: 'Percentage',
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        }
+
+    }],
+    tooltip: {
+        shared: true
+    },
+    legend: {
+        layout: 'vertical',
+        align: 'left',
+        x: 80,
+        verticalAlign: 'top',
+        y: 55,
+        floating: true,
+        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+    },
+
+    plotOptions: {
+        series: {
+          label: {
+            connectorAllowed: false
+        },
+        pointStart: 2010
+    }
+},
+
+series: [{
+    name: 'Choke',
+    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175],
+    tooltip: {
+        valueSuffix: ' %'
+    }
+}, {
+    name: 'WaterCut',
+    data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434],
+    tooltip: {
+        valueSuffix: ' %'
+    }
+}],
+
+responsive: {
+    rules: [{
+      condition: {
+        maxWidth: 500
+    },
+    chartOptions: {
+        legend: {
+          layout: 'horizontal',
+          align: 'center',
+          verticalAlign: 'bottom'
+      }
+  }
+}]
+}
+});
+
+
+        $.getJSON(
+            'https://cdn.rawgit.com/highcharts/highcharts/057b672172ccc6c08fe7dbb27fc17ebca3f5b770/samples/data/range.json',
+            function (data) {
+
+                Highcharts.chart('oilRate', {
+
+                    chart: {
+                        type: 'arearange',
+                        zoomType: 'x',
+                        scrollablePlotArea: {
+                            minWidth: 600,
+                            scrollPositionX: 1
+                        }
+                    },
+
+                    title: {
+                        text: 'Temperature variation by day'
+                    },
+
+                    xAxis: {
+                        type: 'datetime'
+                    },
+
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                        valueSuffix: '°C'
+                    },
+
+                    legend: {
+                        enabled: false
+                    },
+
+                    series: [{
+                        name: 'Temperatures',
+                        data: data
+                    }]
+
+                });
+            }
+            );
+
+
+        Highcharts.chart('temp-pressure', {
+          chart: {
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Temperature and Pressure'
+        },
+        xAxis: [{
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            crosshair: true
+        }],
+  yAxis: [{ // Primary yAxis
+    labels: {
+      format: '{value}°F',
+      style: {
+        color: Highcharts.getOptions().colors[0]
+    }
+},
+title: {
+  text: 'Temperature',
+  style: {
+    color: Highcharts.getOptions().colors[0]
+}
+},
+opposite: true
+
+  }, { // Secondary yAxis
+    gridLineWidth: 0,
+    title: {
+      text: 'Pressure',
+      style: {
+        color: Highcharts.getOptions().colors[1]
+    }
+},
+labels: {
+  format: '{value} psia',
+  style: {
+    color: Highcharts.getOptions().colors[1]
+}
+}
+
+}],
+tooltip: {
+    shared: true
+},
+legend: {
+    layout: 'vertical',
+    align: 'left',
+    x: 80,
+    verticalAlign: 'top',
+    y: 55,
+    floating: true,
+    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+},
+series: [{
+    name: 'Temperature',
+    type: 'spline',
+    yAxis: 1,
+    data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
+    tooltip: {
+      valueSuffix: ' °F'
+  }
+
+}, {
+    name: 'Pressure',
+    type: 'spline',
+    data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6],
+    tooltip: {
+      valueSuffix: ' psia'
+  }
+}],
+
+responsive: {
+    rules: [{
+      condition: {
+        maxWidth: 500
+    },
+    chartOptions: {
+        legend: {
+          layout: 'horizontal',
+          align: 'center',
+          verticalAlign: 'bottom'
+      }
+  }
+}]
+}
+});
+
+    }
+
+    var data = {{ data | safe}};
+    function datainit(){
+  // data = JSON.parse(data);
+  console.log(data)
+  // 
+  // to get keys Object.keys(data)
+  sensors = Object.keys(data) 
+  // $("#device").html(JSON.parse(data[sensors[1]]).equipment)
+
+  // JSON.parse(data[sensors[0]]).datapoints
+  if ('TEMPERATURE1' in data){
+    var temp1 = data['TEMPERATURE1']
+}
+if ('TEMPERATURE2' in data) {
+    var temp2 = data['TEMPERATURE2']
+}
+if ('PRESSURE1' in data){
+    var p1 = data['PRESSURE1']
+}
+if ('PRESSURE2' in data){
+    var p2 = data['PRESSURE2']
+}
+if ('CHOKE_POSITION' in data) {
+    var choke = data['CHOKE_POSITION']
+}
+if ('WATER_CUT' in data) {
+    var waterCut = data['WATER_CUT']
+}
+if ('LIQUID_RATE' in data) {
+    var liquidRate = data['LIQUID_RATE']
+}
+if ('WATER_RATE' in data) {
+    var waterRate = data['WATER_RATE']
+}
+if('OIL_RATE' in data) {
+    var oilRate = data['OIL_RATE']
+}
+var or = []
+for(var i=0;i<=waterRate.points.length-1;i++){
+    or.push([liquidRate.points[i],waterRate.points[i]])
+
+}
+
+
+// var temp = temp1.map(function(item, index) {
+//   // In this case item correspond to currentValue of array a, 
+//   // using index to get value from array b
+//   return item - temp2[index];
+// })
+var temp = []
+for(var i = 0;i<=temp2.points.length-1;i++)
+  temp.push(temp1.points[i] - temp2.points[i]);
+var p = []
+
+for(var i = 0;i<=p2.points.length-1;i++)
+  p.push(p1.points[i] - p2.points[i]);
+    }
+
+$( document ).ready(function() {
+    datainit();
+    charts();
+});
+
+
+
+
+console.log(choke, temp, p, data['ts'])
+
+Highcharts.theme = {
+    colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572',
+    '#FF9655', '#FFF263', '#6AF9C4'],
+    chart: {
+        backgroundColor: {
+            linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+            stops: [
+            [0, 'rgb(255, 255, 255)'],
+            [1, 'rgb(240, 240, 255)']
+            ]
+        },
+        borderWidth: 2,
+        plotBackgroundColor: 'rgba(255, 255, 255, .9)',
+        plotShadow: true,
+        plotBorderWidth: 1
+    },
+    title: {
+        style: {
+            color: '#000',
+            font: 'bold 16px "Trebuchet MS", Verdana, sans-serif'
+        }
+    },
+    subtitle: {
+        style: {
+            color: '#666666',
+            font: 'bold 12px "Trebuchet MS", Verdana, sans-serif'
+        }
+    },
+    xAxis: {
+        gridLineWidth: 1,
+        lineColor: '#000',
+        tickColor: '#000',
+        labels: {
+            style: {
+                color: '#000',
+                font: '11px Trebuchet MS, Verdana, sans-serif'
+            }
+        },
+        title: {
+            style: {
+                color: '#333',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+
+            }
+        }
+    },
+    yAxis: {
+        minorTickInterval: 'auto',
+        lineColor: '#000',
+        lineWidth: 1,
+        tickWidth: 1,
+        tickColor: '#000',
+        labels: {
+            style: {
+                color: '#000',
+                font: '11px Trebuchet MS, Verdana, sans-serif'
+            }
+        },
+        title: {
+            style: {
+                color: '#333',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+            }
+        }
+    },
+    legend: {
+        itemStyle: {
+            font: '9pt Trebuchet MS, Verdana, sans-serif',
+            color: 'black'
+
+        },
+        itemHoverStyle: {
+            color: '#039'
+        },
+        itemHiddenStyle: {
+            color: 'gray'
+        }
+    },
+    labels: {
+        style: {
+            color: '#99b'
+        }
+    },
+
+    navigation: {
+        buttonOptions: {
+            theme: {
+                stroke: '#CCCCCC'
+            }
+        }
+    }
+};
+
+Highcharts.setOptions(Highcharts.theme);
+
+Highcharts.chart('container', {
+    chart: {
+        zoomType: 'xy',
+        // alignTicks:false
+    },
+    boost: {
+        useGPUTranslations: true
+    },
+    title: {
+        text: 'Sensor Data Plots'
+    },
+    subtitle: {
+        text: 'Sensors: ' + sensors.toString()
+    },
+    xAxis: [{
+        categories: data['ts'].slice(1,100),
+        crosshair: true,
+        type: 'datetime'
+    }],
+    yAxis: [{ // Primary yAxis
+        labels: {
+            format: '{value}°F',
+            style: {
+                color: Highcharts.getOptions().colors[4]
+            }
+        },
+        title: {
+            text: 'Temperature',
+            style: {
+                color: Highcharts.getOptions().colors[4]
+            }
+        },
+        opposite: true
+
+    }, { // Secondary yAxis
+        gridLineWidth: 0,
+        title: {
+            text: 'choke',
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        },
+        labels: {
+            format: '{value} %',
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        },
+        min:0,
+        max: 105,
+
+    },{ // Primary yAxis
+        labels: {
+            format: 'Pressure',
+            style: {
+                color: Highcharts.getOptions().colors[3]
+            }
+        },
+        title: {
+            text: '{value} psia',
+            style: {
+                color: Highcharts.getOptions().colors[3]
+            }
+        },
+        opposite: true
+
+    },{ // Secondary yAxis
+        gridLineWidth: 0,
+        title: {
+            text: 'Rate',
+            style: {
+                color: Highcharts.getOptions().colors[1]
+            }
+        },
+        labels: {
+            format: '{value} %',
+            style: {
+                color: Highcharts.getOptions().colors[1]
+            }
+        }
+
+    }],
+    tooltip: {
+        shared: true
+    },
+    legend: {
+        layout: 'vertical',
+        align: 'left',
+        x: 80,
+        verticalAlign: 'top',
+        y: 55,
+        floating: true,
+        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+    },
+    series: [{
+        name: 'choke',
+        type: 'column',
+        yAxis: 1,
+        data: choke.points.slice(1,100),
+        tooltip: {
+            valueSuffix: ' %'
+        }
+
+    },
+    {           name: 'oil rate',
+    type: 'arearange',
+    yAxis: 1,
+    data: or.slice(1,100),
+    tooltip: {
+      valueSuffix: ' bbl/d'
+  }
+}
+,{
+    name: 'Water Cut',
+    type: 'column',
+    yAxis: 1,
+    data: waterCut.points.slice(1,100),
+    tooltip: {
+        valueSuffix: ' %'
+    }
+
+}
+, {
+    name: 'Pressure',
+    type: 'spline',
+    yAxis: 1,
+    data: p.slice(1,100),
+    marker: {
+        enabled: false
+    },
+    dashStyle: 'shortdot',
+    tooltip: {
+        valueSuffix: ' psia'
+    }
+
+}, {
+    name: 'Temperature',
+    type: 'spline',
+    data: temp.slice(1,100),
+    tooltip: {
+        valueSuffix: ' °F'
+    }
+}]
+});
+
+</script>
+</body>
+</html>

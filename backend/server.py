@@ -63,6 +63,32 @@ def series():
     abort(404)
 
 
+@app.route('/ts')
+def ts():
+    device_id = request.args.get('deviceid')
+    if(device_id in sensors_per_equipment):
+        sensors=sensors_per_equipment[device_id]
+        out = {}
+        for d in data:
+            if d.equipment == device_id:
+                for s in sensors:
+                    if d.sensor == s:
+                        print("sensor in data")
+                        if not bool(out):
+                            out["ts"]= [a['timestamp'] for a in json.loads(d.serialize)["datapoints"]]
+                        obj = json.loads(d.serialize)
+                        t = {}
+                        t['equipment'] = obj['equipment']
+                        t['unit'] = obj['unit']
+                        t['sensor'] = obj['sensor']
+                        t['points'] = [a['value'] for a in obj["datapoints"]]
+                        out[s] = t
+                # print(out)
+        # print(out["ts"])
+        return render_template('ts.html',data=json.dumps(out))
+            # return d.serialize
+    abort(404)
+
 @app.route('/sensors')
 def sensors():
     device_id = request.args.get('deviceid')
