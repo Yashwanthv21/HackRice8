@@ -10,59 +10,6 @@ app = Flask(__name__)
 data, equipments, sensors_per_equipment = read_data('input/data-large.csv')
 
 
-# @app.route('/timeseries')
-# def series():
-#     device_id = request.args.get('deviceid')
-#     sensor = request.args.get('sensor')
-#     print(data)
-#     for d in data:
-#         print(d)
-#         # if d.equipment == device_id and d.sensor == sensor:
-#         if d.equipment == device_id:
-#             return render_template('timeseries.html',data=d.serialize)
-#             # return d.serialize
-#     abort(404)
-
-@app.route('/timeseries', methods=['POST'])
-def series():
-    if request.method == 'POST':
-        sensors =  request.form.getlist('sensors')
-        device_id = request.form.get('device_id')
-        print(sensors,device_id)
-    # print(data)
-        out = {}
-        for d in data:
-            if d.equipment == device_id:
-                print(True)
-                for s in sensors:
-                    print(s)
-                    if d.sensor == s:
-                        print("sensor in data")
-                        # out = {key: value for (key, value) in (json.loads(d).items()+json.loads(out).items())}
-                        # print(d.serialize)
-                        # if bool(out):
-                        #     out = merge(d.serialize,out)
-                        # else: 
-                        #     out = d.serialize
-                        if not bool(out):
-                            # print(json.loads(d.serialize)["datapoints"])
-                            # out["ts"]=[k for di in json.loads(d.serialize)["datapoints"] for k in di['timestamp']]
-
-                            out["ts"]= [a['timestamp'] for a in json.loads(d.serialize)["datapoints"]]
-                        obj = json.loads(d.serialize)
-                        t = {}
-                        t['equipment'] = obj['equipment']
-                        t['unit'] = obj['unit']
-                        t['sensor'] = obj['sensor']
-                        t['points'] = [a['value'] for a in obj["datapoints"]]
-                        out[s] = t
-                # print(out)
-        # print(out["ts"])
-        return render_template('timeseries.html',data=json.dumps(out))
-            # return d.serialize
-    abort(404)
-
-
 @app.route('/ts')
 def ts():
     device_id = request.args.get('deviceid')
@@ -73,7 +20,7 @@ def ts():
             if d.equipment == device_id:
                 for s in sensors:
                     if d.sensor == s:
-                        print("sensor in data")
+                        # print("sensor in data")
                         if not bool(out):
                             out["ts"]= [a['timestamp'] for a in json.loads(d.serialize)["datapoints"]]
                         obj = json.loads(d.serialize)
@@ -86,8 +33,8 @@ def ts():
                 # print(out)
         # print(out["ts"])
         if "IC" in device_id:
-            return render_template('ts.html',data=json.dumps(out))
-        return render_template('ts2.html',data=json.dumps(out))
+            return render_template('ts.html',data=json.dumps(out), device=device_id)
+        return render_template('ts2.html',data=json.dumps(out), device=device_id)
             # return d.serialize
     abort(404)
 

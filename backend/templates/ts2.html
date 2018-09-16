@@ -20,7 +20,7 @@
 </style>
 </head>
 <body>
-    <h1>TimeSeries</h1>
+    <h1>TimeSeries plots for Device {{device}}</h1>
     <h2 id="device"></h2>
 
     <div class="row">
@@ -58,11 +58,29 @@
 <!-- <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script> -->
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data-2012-2022.min.js"></script>
 
     <script type="text/javascript">
         var motorTemp = 0;
-        var waterVal = 0;
+        var updateInterval = 1000;
+        var init = 100;
+
+
+Highcharts.setOptions({
+    global: {
+        /**
+         * Use moment-timezone.js to return the timezone offset for individual
+         * timestamps, used in the X axis labels and the tooltip header.
+         */
+        getTimezoneOffset: function (timestamp) {
+            var zone = 'America/Chicago',
+                timezoneOffset = -moment.tz(timestamp, zone).utcOffset();
+
+            return timezoneOffset;
+        }
+    }
+});
 
         function charts(){
 
@@ -77,12 +95,12 @@
         var series = this.series[0];
         var i = 0;
         setInterval(function () {
-          var x = data['ts'].slice(100,); // current time
+          var x = data['ts'].slice(init,); // current time
           motorTemp = MOTOR_TEMP.points.splice(0,1)[0];
           // console.log([x[i], y[i]])
           series.addPoint([x[i], motorTemp], true, true);
           i++;
-      }, 2000);
+      }, updateInterval);
     }
 },
     zoomType: 'xy',
@@ -127,7 +145,19 @@ xAxis: {
     },
 series: [{
     name: 'Temperature',
-    data: MOTOR_TEMP.points.splice(0,100),
+    data: (function () {
+      // generate an array of random data
+      var d = [],
+        i;
+
+      for (i = 0; i <= init; i += 1) {
+        d.push({
+          x: data['ts'][i],
+          y: MOTOR_TEMP.points.splice(0,1)[0]
+        });
+      }
+      return d;
+    }()),
     tooltip: {
         valueSuffix: ' °F'
     }
@@ -250,7 +280,7 @@ function (chart) {
       var point = chart.series[0].points[0];
     point.update(motorTemp);
 
-}, 2000);
+}, updateInterval);
 }
 });
 
@@ -317,7 +347,7 @@ Highcharts.chart('vsd', {
     }
   }, {
     min: 50,
-    max: 250,
+    max: 450,
     minorTickPosition: 'outside',
     tickPosition: 'outside',
     labels: {
@@ -325,8 +355,8 @@ Highcharts.chart('vsd', {
       distance: 20
     },
     plotBands: [{
-      from: 220,
-      to: 250,
+      from: 380,
+      to: 450,
       color: '#C02316',
       innerRadius: '100%',
       outerRadius: '105%'
@@ -376,7 +406,7 @@ Highcharts.chart('vsd', {
         right.update(rightVal, false);
         chart.redraw();
       }
-    }, 2000);
+    }, updateInterval);
 
   });
 
@@ -392,7 +422,7 @@ Highcharts.chart('temp-pressure', {
         var series2 = this.series[2];
         var i = 0;
         setInterval(function () {
-          var x = data['ts'].slice(100,); // current time
+          var x = data['ts'].slice(init,); // current time
           var c = INTAKE_TEMPERATURE.points.splice(0,1)[0];
           var w = DISCHARGE_PRESSURE.points.splice(0,1)[0];
           var j = INTAKE_PRESSURE.points.splice(0,1)[0];
@@ -401,7 +431,7 @@ Highcharts.chart('temp-pressure', {
           series1.addPoint([x[i], w], true, true);
           series2.addPoint([x[i], j], true, true);
           i++;
-      }, 2000);
+      }, updateInterval);
     }
 },
     zoomType: 'xy'
@@ -460,7 +490,19 @@ series: [{
     name: 'Temperature',
     type: 'spline',
     yAxis: 1,
-    data: INTAKE_TEMPERATURE.points.splice(0,100),
+    data: (function () {
+      // generate an array of random data
+      var d = [],
+        i;
+
+      for (i = 0; i <= init; i += 1) {
+        d.push({
+          x: data['ts'][i],
+          y: INTAKE_TEMPERATURE.points.splice(0,1)[0]
+        });
+      }
+      return d;
+    }()),
     tooltip: {
       valueSuffix: ' °F'
   }
@@ -468,14 +510,38 @@ series: [{
 }, {
     name: 'Pressure',
     type: 'area',
-    data: DISCHARGE_PRESSURE.points.splice(0,100),
+    data: (function () {
+      // generate an array of random data
+      var d = [],
+        i;
+
+      for (i = 0; i <= init; i += 1) {
+        d.push({
+          x: data['ts'][i],
+          y: DISCHARGE_PRESSURE.points.splice(0,1)[0]
+        });
+      }
+      return d;
+    }()),
     tooltip: {
       valueSuffix: ' psia'
   }
 },{
     name: 'Intake Pressure',
     type: 'area',
-    data: INTAKE_PRESSURE.points.splice(0,100),
+    data: (function () {
+      // generate an array of random data
+      var d = [],
+        i;
+
+      for (i = 0; i <= init; i += 1) {
+        d.push({
+          x: data['ts'][i],
+          y: INTAKE_PRESSURE.points.splice(0,1)[0]
+        });
+      }
+      return d;
+    }()),
     tooltip: {
       valueSuffix: ' psia'
   }

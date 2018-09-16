@@ -22,37 +22,19 @@ Deliver a web application to display/query/analyze time-series data from downhol
  - Go to directory **frontend**
  - run  `npm install`
  - run `npm start`
- - Browse to  [http:\\\localhost:4200](http:localhost:4200)
+ - Browse to  [http:\\\localhost:5000\devices](http:localhost:5000\devices)
 
  ## Use the APIs
  - API 1:
 	- GET: /devices
 		- Description: list all different devices in the dataset
-		- Sample Response:
-			- [
-				"IC01",
-				"ESP03",
-				"ESP01",
-				"ESP02",
-				"IC02"	
-			  ]
-	- GET: /sensors?deviceid=IC01
-		- Description: get all sensors/measurements available for a particular device
-		- Required query parameter: deviceid
-		- Sample Response:
-			- [
-				"CHOKE_POSITION",
-				"PRESSURE1",
-				"PRESSURE2",
-				"TEMPERATURE1",
-				"TEMPERATURE2",
-				"WATER_CUT",
-				"LIQUID_RATE",
-				"WATER_RATE",
-				"OIL_RATE"
-			  ]
-	- GET: /timeseries?deviceid=IC01&sensor=OIL_RATE
-		- Description: get time series data (time/value pairs) for device/sensor combo
-		- Required query parameters: deviceid, sensor
-		- Sample Response:
-			- {"equipment": "IC01", "sensor": "OIL_RATE", "unit": "bbl/d", "datapoints": [{"timestamp": 1370044800, "value": 0.0},..]}
+		- Click on any device to visualize its data
+
+ ## Data
+ - The data currently used is static, but it is animated using JavaScript to look like the live data.
+ - This project can be extended to realt-time data by using sockets to get the stream of data and update the plots.
+
+ ## ScreenShots
+ - There are currently two types of Devices IC and ESP, so there are two types of charts. One for each type.
+
+ 
